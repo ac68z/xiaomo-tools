@@ -1,0 +1,17 @@
+{
+  "name": "dsh-memory-surface",
+  "version": "1.0.0",
+  "description": "DSH 记忆浮现插件：每轮第一步用本地向量服务查一遍相关旧记忆，把命中的两三条作为带来源的 user/message 塞进上下文（会显示成系统提醒）。只在本会话的记忆里找。",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": { "default": "./lib/index.js" },
+    "./package.json": "./package.json"
+  },
+  "files": ["lib", "cordis.patch.yml", "README.md"],
+  "keywords": ["dsh", "dsh-plugin", "deepseek-harness", "memory", "recall", "embedding"],
+  "license": "MIT",
+  "engines": { "node": ">=22.5" },
+  "dsh": { "bundle": { "patch": "./cordis.patch.yml" } },
+  "peerDependencies": { "@deepseek-ai/dsh": ">=0.1.0-rc.6" }
+}

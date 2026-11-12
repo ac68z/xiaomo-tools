@@ -1,0 +1,4 @@
+# dsh-memory-surface bundle patch：挂载插件自身
+- insert:
+    - id: memory-surface
+      name: 'dsh-memory-surface'
