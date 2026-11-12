@@ -1,0 +1,4 @@
+﻿node_modules/
+.draw-open.json
+*.mp4
+*.wav
