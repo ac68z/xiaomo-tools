@@ -1,7 +1,7 @@
 # xiaomo-toolkit · 小墨的工具合集
 
-一个仓库，顶层平级三块：**`tools/`**（能直接跑的小工具）和两个插件目录并排放，互不嵌套。
-`tools/` 里再按类别分文件夹，分类下面才是具体工具。
+一个仓库，里面一个工具一个文件夹，平级并排：`draw/`、`dsh-memory-surface/`、`dsh-tool-surface/`。
+文件夹里就是具体东西（脚本、模板、说明），没有别的层级。
 不是框架，不装依赖管理器，每件都能单独拿走用。
 
 > 这些都是「在本机跑」的东西：调用本地服务（ComfyUI）、读写本地文件。
@@ -17,33 +17,30 @@
 ## 目录
 
 ```
-xiaomo-toolkit/
-  tools/                     ← 跟插件平级；里面按类别分，再下面是具体工具
-    image/
-      draw/                  一句话出图（ComfyUI）＋「先读守则才能画」的闸门
-    video/                   以后放视频相关（还没加）
-  dsh-memory-surface/        ← 插件：记忆浮现，每轮把相关旧记忆浮一行出来
-  dsh-tool-surface/          ← 插件：工具浮现，按这句话捞工具细则
+xiaomo-tools/
+  draw/                   一句话出图（ComfyUI）＋「先读守则才能画」的闸门
+  dsh-memory-surface/     记忆浮现：每轮把相关旧记忆浮一行出来
+  dsh-tool-surface/       工具浮现：按这句话捞工具细则
 ```
 
-| 路径 | 类型 | 是什么 | 依赖 |
-|---|---|---|---|
-| [`tools/image/draw/`](tools/image/draw/) | 工具 | 一句话出图：提示词打包成 ComfyUI 工作流，出图落盘，带守则闸门 | ComfyUI + Node 18+ + Python 3.8+ |
-| [`dsh-memory-surface/`](dsh-memory-surface/) | 插件 | 记忆浮现：按这句话去检索长期归档，命中就浮一行，不塞满上下文 | 宿主支持插件（详见该目录 README） |
-| [`dsh-tool-surface/`](dsh-tool-surface/) | 插件 | 工具浮现：检索工具目录，命中就把「工具名＋细则路径」塞进本轮 | 宿主支持插件 + 本地检索服务 |
+| 文件夹 | 是什么 | 依赖 |
+|---|---|---|
+| [`draw/`](draw/) | 一句话出图：提示词打包成 ComfyUI 工作流，出图落盘，带守则闸门 | ComfyUI + Node 18+ + Python 3.8+ |
+| [`dsh-memory-surface/`](dsh-memory-surface/) | 记忆浮现：按这句话去检索长期归档，命中就浮一行，不塞满上下文 | 宿主支持插件（详见该目录 README） |
+| [`dsh-tool-surface/`](dsh-tool-surface/) | 工具浮现：检索工具目录，命中就把「工具名＋细则路径」塞进本轮 | 宿主支持插件 + 本地检索服务 |
 
 加新东西的规矩：
 
-- 工具 → `tools/<类别>/<工具名>/`（类别比如 image / video / data）；插件 → 顶层一个 `<插件名>/`，和 tools 平级。
-- 两者不互相 import；加完在上表补一行；工具目录里不放模型、不放数据。
+- 一个工具＝一个顶层文件夹，里面放它自己的脚本和说明；不嵌套、不按类别再分一层。
+- 各文件夹互不 import；加完在上表补一行；文件夹里不放模型、不放数据。
 - 插件原本各自单独一个仓库（`dsh-memory-surface`），现在并到这里；**旧仓库地址继续可用**，但新东西统一进本仓库。
 
 ---
 
-## tools/image/draw/ · 一句话出一张图
+## draw/ · 一句话出一张图
 
 ```
-node tools/image/draw/draw.mjs "1girl, solo, white long hair, red eyes" \
+node draw/draw.mjs "1girl, solo, white long hair, red eyes" \
   "lowres, bad anatomy, bad hands" 832 1216 34 --ckpt=animagine-xl-3.1.safetensors
 ```
 
@@ -66,17 +63,17 @@ node tools/image/draw/draw.mjs "1girl, solo, white long hair, red eyes" \
 
 1. 算 `rules.txt` 的 sha256，取前 8 位；
 2. 跑到期的 `.draw-open.json` 里没有这个码 → 把守则全文打出来，退出，不画；
-3. `python tools/image/draw/open_draw.py` 打印守则、给出那个码，输回去才写状态文件；
+3. `python draw/open_draw.py` 打印守则、给出那个码，输回去才写状态文件；
 4. 默认 2 小时过期；**守则一改，码就变，旧的开画立刻作废**。
 
 它拦的不是别人，是自己手快。想改时长：`open_draw.py --hours 8`，看状态 `--status`，关闸 `--close`。
 
 > Windows 上别用 `powershell` 把码直接管进 stdin（会变 UTF-16 判成错）：
-> 把码写进 UTF-8 无 BOM 文件，再 `cmd /c "python tools/image/draw/open_draw.py < code.txt"`。
+> 把码写进 UTF-8 无 BOM 文件，再 `cmd /c "python draw/open_draw.py < code.txt"`。
 
 ### 守则是模板，请改成你自己的
 
-`tools/image/draw/rules.txt` 写的是**我这套用法**的规矩（固定配方、改图幅度、自检四项、留档、禁止）。
+`draw/rules.txt` 写的是**我这套用法**的规矩（固定配方、改图幅度、自检四项、留档、禁止）。
 它不是法律，也不该照抄——**你可以直接改**：
 
 - 觉得哪条不合你的习惯就删；没写到的坑就加一条（比如「一次最多出三张」「某些题材不画」）。
@@ -93,7 +90,7 @@ node tools/image/draw/draw.mjs "1girl, solo, white long hair, red eyes" \
 | 加高清放大 | 后面接 `LatentUpscale` + 第二次 `KSampler`（denoise 0.4~0.55） |
 | 等结果的上限 | `for (let i = 0; i < 120; i++)` 里的 120（每次 2 秒） |
 | 闸门有效期 | `open_draw.py --hours N` |
-| 规矩内容 | `tools/image/draw/rules.txt`（改完必须重新开画） |
+| 规矩内容 | `draw/rules.txt`（改完必须重新开画） |
 
 ### 为什么要有笔记
 
