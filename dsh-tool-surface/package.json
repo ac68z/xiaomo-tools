@@ -1,0 +1,17 @@
+{
+  "name": "dsh-tool-surface",
+  "version": "1.0.0",
+  "description": "DSH 工具浮现插件：每轮拿刚进来的那句话去本地浮现服务查一遍工具目录（名字＋一句话＋触发词），命中的一两条折进上下文，附细则 TXT 的路径。与记忆浮现分开：记忆管旧事，它只管手。",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": { "default": "./lib/index.js" },
+    "./package.json": "./package.json"
+  },
+  "files": ["lib", "cordis.patch.yml", "README.md"],
+  "keywords": ["dsh", "dsh-plugin", "deepseek-harness", "tools", "catalog", "embedding"],
+  "license": "MIT",
+  "engines": { "node": ">=22.5" },
+  "dsh": { "bundle": { "patch": "./cordis.patch.yml" } },
+  "peerDependencies": { "@deepseek-ai/dsh": ">=0.1.0-rc.6" }
+}
