@@ -1,7 +1,7 @@
 # xiaomo-toolkit · 小墨的工具合集
 
-一个仓库，三层：**仓库 → 分类文件夹 → 具体工具**。
-分类按「干哪类活」分，中英并列好认；分类下面才是具体工具，工具文件夹里放它自己的脚本和说明。
+一个仓库，一个功能一个母体目录，平铺在顶层：`draw/` 是出图，以后加视频就是 `video/`，加读文件就是一批读写类的目录。
+母体目录里就是它自己的脚本和说明，不再往下分层。
 不是框架，不装依赖管理器，每件都能单独拿走用。
 
 > 这些都是「在本机跑」的东西：调用本地服务（ComfyUI）、读写本地文件。
@@ -18,29 +18,26 @@
 
 ```
 xiaomo-tools/
-  视觉工具-vision/
-    draw/                    一句话出图（ComfyUI）＋「先读守则才能画」的闸门
-  视频工具-video/            （先占位，还没东西）
-  读写工具-io/               （先占位，还没东西）
+  draw/      一句话出图（ComfyUI）＋「先读守则才能画」的闸门
 ```
 
 | 路径 | 是什么 | 依赖 |
 |---|---|---|
-| [`视觉工具-vision/draw/`](视觉工具-vision/draw/) | 一句话出图：提示词打包成 ComfyUI 工作流，出图落盘，带守则闸门 | ComfyUI + Node 18+ + Python 3.8+ |
+| [`draw/`](draw/) | 一句话出图：提示词打包成 ComfyUI 工作流，出图落盘，带守则闸门 | ComfyUI + Node 18+ + Python 3.8+ |
 
 加新东西的规矩：
 
-- 先看归哪一类：视觉（图、视频帧、识别）、视频（剪、合成）、读写（文件、表格、文档）。
-- 归好类就在分类文件夹下建工具文件夹，里面放脚本和说明；不在分类之间乱放，也不在工具文件夹里再套一层。
-- 加完在上表补一行；工具文件夹里不放模型、不放数据。
+- 一个功能＝一个顶层母体目录，名字就说清是干什么的（`draw/`、`video/`、`files/`）；不建空的占位目录，真有了再加。
+- 母体目录里直接放脚本和说明；不加第二层分类，也不把别的功能塞进来。
+- 加完在上表补一行；目录里不放模型、不放数据。
 - **这个仓库只放工具，不放插件。** 插件（记忆浮现、工具浮现）各自单独建仓库：插件要挂宿主、跟着宿主版本走，跟工具混在一起只会互相拖累。
 
 ---
 
-## 视觉工具-vision/draw/ · 一句话出一张图
+## draw/ · 一句话出一张图
 
 ```
-node 视觉工具-vision/draw/draw.mjs "1girl, solo, white long hair, red eyes" \
+node draw/draw.mjs "1girl, solo, white long hair, red eyes" \
   "lowres, bad anatomy, bad hands" 832 1216 34 --ckpt=animagine-xl-3.1.safetensors
 ```
 
@@ -63,17 +60,17 @@ node 视觉工具-vision/draw/draw.mjs "1girl, solo, white long hair, red eyes" 
 
 1. 算 `rules.txt` 的 sha256，取前 8 位；
 2. 跑到期的 `.draw-open.json` 里没有这个码 → 把守则全文打出来，退出，不画；
-3. `python 视觉工具-vision/draw/open_draw.py` 打印守则、给出那个码，输回去才写状态文件；
+3. `python draw/open_draw.py` 打印守则、给出那个码，输回去才写状态文件；
 4. 默认 2 小时过期；**守则一改，码就变，旧的开画立刻作废**。
 
 它拦的不是别人，是自己手快。想改时长：`open_draw.py --hours 8`，看状态 `--status`，关闸 `--close`。
 
 > Windows 上别用 `powershell` 把码直接管进 stdin（会变 UTF-16 判成错）：
-> 把码写进 UTF-8 无 BOM 文件，再 `cmd /c "python 视觉工具-vision/draw/open_draw.py < code.txt"`。
+> 把码写进 UTF-8 无 BOM 文件，再 `cmd /c "python draw/open_draw.py < code.txt"`。
 
 ### 守则是模板，请改成你自己的
 
-`视觉工具-vision/draw/rules.txt` 写的是**我这套用法**的规矩（固定配方、改图幅度、自检四项、留档、禁止）。
+`draw/rules.txt` 写的是**我这套用法**的规矩（固定配方、改图幅度、自检四项、留档、禁止）。
 它不是法律，也不该照抄——**你可以直接改**：
 
 - 觉得哪条不合你的习惯就删；没写到的坑就加一条（比如「一次最多出三张」「某些题材不画」）。
@@ -90,7 +87,7 @@ node 视觉工具-vision/draw/draw.mjs "1girl, solo, white long hair, red eyes" 
 | 加高清放大 | 后面接 `LatentUpscale` + 第二次 `KSampler`（denoise 0.4~0.55） |
 | 等结果的上限 | `for (let i = 0; i < 120; i++)` 里的 120（每次 2 秒） |
 | 闸门有效期 | `open_draw.py --hours N` |
-| 规矩内容 | `视觉工具-vision/draw/rules.txt`（改完必须重新开画） |
+| 规矩内容 | `draw/rules.txt`（改完必须重新开画） |
 
 ### 为什么要有笔记
 
