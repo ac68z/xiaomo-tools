@@ -13,23 +13,25 @@
   目录（三步内找到工具）、细则（参数和坑）、闸门与守则（拦手快）。这三样不是插件，平台换了文件还在。
 - 插件只留**必须绑平台**的那几件（碰屏幕、收消息、发文件），其余全部走标准协议。
 
-同一个道理落在这个仓库里：`draw/` 是普通 CLI，不依赖任何插件框架——`node draw/draw.mjs ...` 就能跑。
+同一个道理落在这个仓库里：`tools/draw/` 是普通 CLI，不依赖任何插件框架——`node tools/draw/draw.mjs ...` 就能跑。
 
 
 ## 目录
 
 | 目录 | 是什么 | 依赖 |
 |---|---|---|
-| [`draw/`](draw/) | 一句话出图：把提示词打包成 ComfyUI 工作流，出图落盘；带「先读守则才能画」的闸门 | ComfyUI + Node 18+ + Python 3.8+ |
+| [`tools/draw/`](tools/draw/) | 一句话出图：把提示词打包成 ComfyUI 工作流，出图落盘；带「先读守则才能画」的闸门 | ComfyUI + Node 18+ + Python 3.8+ |
 
-（后续会往里加：视频分镜、工具目录生成之类的——每加一件就在这张表补一行。）
+目录只有一层：`tools/<工具名>/`。每加一件＝建一个目录＋在上表补一行，工具之间不互相 import。`tools/draw/` 之外不放大文件、不放模型。
+
+> 这个仓库只放「工具」。跟之前的 dsh-memory-surface（插件仓库）刻意分开：插件是插件，工具是工具，一个坏了不影响另一个。
 
 ---
 
 ## draw/ · 一句话出一张图
 
 ```
-node draw/draw.mjs "1girl, solo, white long hair, red eyes" \
+node tools/draw/draw.mjs "1girl, solo, white long hair, red eyes" \
   "lowres, bad anatomy, bad hands" 832 1216 34 --ckpt=animagine-xl-3.1.safetensors
 ```
 
@@ -52,17 +54,17 @@ node draw/draw.mjs "1girl, solo, white long hair, red eyes" \
 
 1. 算 `rules.txt` 的 sha256，取前 8 位；
 2. 跑到期的 `.draw-open.json` 里没有这个码 → 把守则全文打出来，退出，不画；
-3. `python draw/open_draw.py` 打印守则、给出那个码，输回去才写状态文件；
+3. `python tools/draw/open_draw.py` 打印守则、给出那个码，输回去才写状态文件；
 4. 默认 2 小时过期；**守则一改，码就变，旧的开画立刻作废**。
 
 它拦的不是别人，是自己手快。想改时长：`open_draw.py --hours 8`，看状态 `--status`，关闸 `--close`。
 
 > Windows 上别用 `powershell` 把码直接管进 stdin（会变 UTF-16 判成错）：
-> 把码写进 UTF-8 无 BOM 文件，再 `cmd /c "python draw/open_draw.py < code.txt"`。
+> 把码写进 UTF-8 无 BOM 文件，再 `cmd /c "python tools/draw/open_draw.py < code.txt"`。
 
 ### 守则是模板，请改成你自己的
 
-`draw/rules.txt` 写的是**我这套用法**的规矩（固定配方、改图幅度、自检四项、留档、禁止）。
+`tools/draw/rules.txt` 写的是**我这套用法**的规矩（固定配方、改图幅度、自检四项、留档、禁止）。
 它不是法律，也不该照抄——**你可以直接改**：
 
 - 觉得哪条不合你的习惯就删；没写到的坑就加一条（比如「一次最多出三张」「某些题材不画」）。
@@ -79,7 +81,7 @@ node draw/draw.mjs "1girl, solo, white long hair, red eyes" \
 | 加高清放大 | 后面接 `LatentUpscale` + 第二次 `KSampler`（denoise 0.4~0.55） |
 | 等结果的上限 | `for (let i = 0; i < 120; i++)` 里的 120（每次 2 秒） |
 | 闸门有效期 | `open_draw.py --hours N` |
-| 规矩内容 | `draw/rules.txt`（改完必须重新开画） |
+| 规矩内容 | `tools/draw/rules.txt`（改完必须重新开画） |
 
 ### 为什么要有笔记
 
