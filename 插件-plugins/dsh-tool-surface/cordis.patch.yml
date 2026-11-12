@@ -1,4 +1,0 @@
-# dsh-tool-surface bundle patch：挂载插件自身
-- insert:
-    - id: tool-surface
-      name: 'dsh-tool-surface'
