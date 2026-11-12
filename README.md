@@ -82,8 +82,7 @@ node draw/draw.mjs "1girl, solo, white long hair, red eyes" \
 
 | 模型 | 仓库位置 | 放哪 |
 |---|---|---|
-| Animagine XL 3.1（主用） | `https://huggingface.co/cagliostro/AnimagineXL3.1` → `AnimagineXL31.safetensors` | `ComfyUI/models/checkpoints/` |
-| SDXL Base 1.0（备） | `https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0` | 同上 |
+| Animagine XL 3.1 | `https://huggingface.co/cagliostro/AnimagineXL3.1` → `AnimagineXL31.safetensors` | `ComfyUI/models/checkpoints/` |
 | 控制网 canny / openpose（可选） | HF 上 `controlnet-canny-sdxl-1.0` / `controlnet-openpose-sdxl-1.0` | `ComfyUI/models/controlnet/` |
 | ComfyUI 本体 | `https://github.com/comfyanonymous/ComfyUI` | 自己选目录 |
 
